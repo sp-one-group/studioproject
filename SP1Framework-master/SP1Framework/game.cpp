@@ -5,12 +5,21 @@
 #include "Framework\console.h"
 #include <iostream>
 #include <iomanip>
+#include <vector>
+
+using std::vector;
 
 double elapsedTime;
 double deltaTime;
 bool keyPressed[K_COUNT];
 COORD charLocation;
 COORD consoleSize;
+
+size_t playfieldX = 15, playfieldY = 8;
+
+vector<vector<unsigned int>> playfield(playfieldY);
+
+unsigned int TEST;
 
 void init()
 {
@@ -30,11 +39,21 @@ void init()
     consoleSize.X = csbi.srWindow.Right + 1;
     consoleSize.Y = csbi.srWindow.Bottom + 1;
 
-    // set the character to be in the center of the screen.
-    charLocation.X = consoleSize.X / 2;
-    charLocation.Y = consoleSize.Y / 2;
+	srand(time(0)); rand();
 
     elapsedTime = 0.0;
+
+	for (unsigned int Y = 0; Y < playfieldY; Y++)
+	{
+		vector<unsigned int> V(playfieldX);
+
+		for (unsigned int X = 0; X < playfieldX; X++) V[X] = rand() % 5 + 1;
+
+		playfield[Y] = V;
+	}
+
+	charLocation.X = rand()%playfieldX;
+	charLocation.Y = rand()%playfieldY + 1;
 }
 
 void shutdown()
@@ -61,49 +80,41 @@ void update(double dt)
     // Updating the location of the character based on the key press
     if (keyPressed[K_UP] && charLocation.Y > 0)
     {
-        Beep(1440, 30);
         charLocation.Y--; 
     }
     if (keyPressed[K_LEFT] && charLocation.X > 0)
     {
-        Beep(1440, 30);
         charLocation.X--; 
     }
     if (keyPressed[K_DOWN] && charLocation.Y < consoleSize.Y - 1)
     {
-        Beep(1440, 30);
         charLocation.Y++; 
     }
     if (keyPressed[K_RIGHT] && charLocation.X < consoleSize.X - 1)
     {
-        Beep(1440, 30);
         charLocation.X++; 
     }
 
     // quits the game if player hits the escape key
     if (keyPressed[K_ESCAPE])
-        g_quitGame = true;    
+        g_quitGame = true;
 }
 
 void render()
 {
     // clear previous screen
-    colour(0x0F);
     cls();
 
     //render the game
 
-    //render test screen code (not efficient at all)
-    const WORD colors[] =   {
-	                        0x1A, 0x2B, 0x3C, 0x4D, 0x5E, 0x6F,
-	                        0xA1, 0xB2, 0xC3, 0xD4, 0xE5, 0xF6
-	                        };
-	
-	for (int i = 0; i < 12; ++i)
+	for (unsigned int Y = 0; Y < playfieldY; Y++)
 	{
-		gotoXY(3*i,i+1);
-		colour(colors[i]);
-		std::cout << "WOW";
+		for (unsigned int X = 0; X < playfieldX; X++)
+		{
+			gotoXY(X, Y + 1);
+			colour(0x0F);
+			std::cout << playfield[Y][X];
+		}
 	}
 
     // render time taken to calculate this frame
@@ -120,5 +131,5 @@ void render()
     colour(0x0C);
     std::cout << (char)1;
 
-    
+	colour(0x0F);
 }
