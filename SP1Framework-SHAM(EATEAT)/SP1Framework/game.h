@@ -9,7 +9,11 @@ extern bool g_quitGame;
 enum Keys
 {
     K_UP,
+    K_UPLEFT,
+    K_UPRIGHT,
     K_DOWN,
+    K_DOWNLEFT,
+    K_DOWNRIGHT,
     K_LEFT,
     K_RIGHT,
     K_ESCAPE,
